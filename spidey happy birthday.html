@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spidey: Into Another Year</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;700;900&family=Bebas+Neue&family=Inter:wght@400;500;600&family=Cinzel:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+<style>
+  :root{
+    --black:#040405; --char:#101012; --red:#e11d2e; --red-deep:#7d0d18;
+    --gold:#e8b34d; --paper:#f3efe6; --dim:#b9b2a4; --chrome1:#fff8e8; --chrome2:#6e0e1a;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth; scroll-snap-type:y proximity;}
+  body{background:var(--black); color:var(--paper); font-family:'Inter',sans-serif; overflow-x:hidden;}
+  @media (prefers-reduced-motion: reduce){ *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;} }
+  .display{font-family:'Big Shoulders Display',sans-serif; font-weight:900; text-transform:uppercase; line-height:0.88;}
+  .neue{font-family:'Bebas Neue',sans-serif; text-transform:uppercase; letter-spacing:0.04em;}
+
+  /* ============ INTRO WRAPPER ============ */
+  #intro{position:fixed; inset:0; z-index:200; background:#000; overflow:hidden;}
+  #intro.hide{animation:introOut 0.9s ease forwards; pointer-events:none;}
+  @keyframes introOut{ to{opacity:0; visibility:hidden;} }
+
+  .layer{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
+
+  /* --- SCENE 1: eyes + welcome --- */
+  #bgLayer{
+    opacity:0;
+    animation: fadeIn 0.4s 0.9s ease forwards;
+    background:radial-gradient(ellipse at center, #c40f1c 0%, #75090f 65%, #200304 100%);
+    z-index:0;
+  }
+  @keyframes fadeIn{ to{ opacity:1; } }
+
+  #contentLayer{
+    flex-direction:column; gap:4vh; z-index:1;
+    opacity:0;
+    animation: fadeIn 0.4s 0.9s ease forwards;
+  }
+
+  /* enlarged eyes (shared fanged design, kept everywhere) */
+  .eyes-svg{
+    width:min(72vw, 520px); height:auto;
+    overflow:visible;
+    filter:drop-shadow(0 0 42px rgba(0,0,0,0.6));
+  }
+  .eyes-svg .eye-group{
+    animation:blink 3s 0.9s ease-in-out infinite;
+    transform-origin:center;
+  }
+  .eyes-svg .eye{
+    stroke:none; fill:#ffffff;
+    animation: eyeColor 2.2s 1.2s ease forwards;
+  }
+  @keyframes eyeColor{
+    0%{ fill:#ffffff; filter:drop-shadow(0 0 14px rgba(255,255,255,0.7)); }
+    55%{ fill:#ffffff; filter:drop-shadow(0 0 14px rgba(255,255,255,0.7)); }
+    100%{ fill:#0a0a0a; filter:drop-shadow(0 0 6px rgba(0,0,0,0.4)); }
+  }
+  @keyframes blink{
+    0%,14%,28%,100%{ transform:scaleY(1); }
+    21%{ transform:scaleY(0.05); }
+  }
+
+  #welcomeText{
+    display:flex; flex-direction:column; align-items:center;
+    opacity:0;
+    animation: welcomeFade 1.6s 3.6s ease forwards;
+  }
+  #welcomeText span{
+    font-family:'Cinzel', serif; font-weight:600; color:#e8e8e8;
+    letter-spacing:0.22em; text-align:center;
+    text-shadow: 0 0 24px rgba(196,15,28,0.85), 0 0 52px rgba(196,15,28,0.5);
+    line-height:1.3;
+  }
+  #welcomeText .line1{ font-size:min(5.2vw, 34px); font-weight:500; letter-spacing:0.4em; }
+  #welcomeText .line2{ font-size:min(11vw, 72px); }
+  @keyframes welcomeFade{
+    0%{ opacity:0; transform:translateY(10px); }
+    100%{ opacity:1; transform:translateY(0); }
+  }
+
+  /* --- transition to black, then reveal site --- */
+  #blackOut{
+    position:absolute; inset:0; background:#000; opacity:0;
+    animation: fadeInFwd 1s 5.8s ease forwards;
+    z-index:3;
+  }
+  @keyframes fadeInFwd{ to{ opacity:1; } }
+
+  /* ============ MAIN SITE ============ */
+  #site{ position:relative; opacity:0; }
+  #site.reveal{ animation:siteIn 1.2s ease forwards; }
+  @keyframes siteIn{ from{opacity:0;} to{opacity:1;} }
+
+  .bg-web{ position:fixed; inset:0; z-index:0; opacity:0.14; pointer-events:none; }
+  .bg-web svg{ width:100%; height:100%; }
+  .bg-line{ stroke:var(--red-deep); stroke-width:1; fill:none; }
+
+  section{ position:relative; z-index:1; padding:8rem 6vw; max-width:1040px; margin:0 auto; scroll-snap-align:start; }
+  .hero, .message, .powers{ min-height:100vh; display:flex; flex-direction:column; justify-content:center; }
+
+  .reveal-up{ opacity:0; transform:translateY(36px); transition:opacity 0.9s ease, transform 0.9s ease; }
+  .reveal-up.in{ opacity:1; transform:translateY(0); }
+
+  .hero{ min-height:100svh; display:flex; flex-direction:column; justify-content:center; max-width:1200px; }
+  .hero-grid{ display:flex; gap:4rem; align-items:flex-end; flex-wrap:wrap; }
+  .hero-eyebrow{ color:var(--gold); font-size:1rem; font-weight:600; letter-spacing:0.08em; margin-bottom:1.3rem; display:flex; align-items:center; gap:0.6rem; }
+  .icon-spider-red{ color:var(--red); font-size:1.1em; }
+  .icon-spider-thin{ color:var(--paper); font-size:1em; }
+  .hero-title{ font-size:clamp(3.6rem,11vw,8.5rem); color:var(--paper); }
+  .hero-title .accent{ color:var(--red); display:block; text-shadow:0 0 36px rgba(225,29,46,0.45); }
+  .side-note{
+    max-width:300px; border-left:3px solid var(--red); padding-left:1.5rem;
+    color:var(--dim); font-size:1.05rem; line-height:1.75;
+  }
+  .side-note b{ color:var(--paper); }
+
+  /* Web-shaped divider element between sections */
+  .web-divider{
+    display:flex; align-items:center; justify-content:center;
+    gap:1rem; margin:0 auto; max-width:1040px; padding:0 6vw;
+    color:var(--red-deep); opacity:0.7;
+  }
+  .web-divider i{ font-size:1.6rem; flex:none; }
+  .web-divider .line{ flex:1; height:1px; background:linear-gradient(90deg, transparent, rgba(225,29,46,0.35), transparent); }
+
+  .eyebrow-label{ font-size:0.9rem; color:var(--red); font-weight:600; letter-spacing:0.1em; margin-bottom:1.1rem; display:flex; align-items:center; gap:0.55rem; }
+  .message h2{ font-size:clamp(2.2rem,5.6vw,3.6rem); color:var(--paper); max-width:17ch; margin-bottom:2.2rem; }
+  .message p{ font-size:1.2rem; line-height:1.85; color:var(--dim); max-width:60ch; margin-bottom:1.4rem; }
+  .message p strong{ color:var(--paper); font-weight:600; }
+
+  .powers h2{ font-size:clamp(2.2rem,5.6vw,3.6rem); color:var(--paper); max-width:18ch; margin-bottom:0.7rem; }
+  .powers > p{ color:var(--dim); max-width:52ch; margin-bottom:3.2rem; font-size:1.1rem; }
+  .power-grid{ display:grid; grid-template-columns:1fr 1fr; gap:1px; background:rgba(243,239,230,0.1); border:1px solid rgba(243,239,230,0.1); }
+  .power-card{ background:var(--char); padding:3rem 2.4rem; transition:background 0.3s ease, transform 0.3s ease; position:relative; overflow:hidden; }
+  .power-card:hover{ background:#151517; transform:translateY(-2px); }
+  .power-card::before{
+    content:""; position:absolute; top:0; left:0; width:100%; height:3px;
+    background:var(--red); transform:scaleX(0); transform-origin:left;
+    transition:transform 0.4s ease;
+  }
+  .power-card:hover::before{ transform:scaleX(1); }
+  .power-card .mark{ color:var(--red); font-family:'Big Shoulders Display',sans-serif; font-weight:900; font-size:2.8rem; margin-bottom:0.9rem; display:block; }
+  .power-card h3{ font-size:1.5rem; color:var(--paper); margin-bottom:0.9rem; font-weight:600; }
+  .power-card p{ color:var(--dim); line-height:1.75; font-size:1.05rem; }
+
+  /* Full-bleed red closing section */
+  .closing{
+    text-align:center;
+    position:relative;
+    max-width:none; margin:0; width:100%;
+    min-height:100vh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    background: linear-gradient(160deg, var(--red) 0%, var(--red-deep) 100%);
+    padding: 6rem 6vw;
+  }
+  .closing-inner{ max-width:720px; }
+  .closing h2{ font-size:clamp(3rem,9vw,6rem); color:#fff; margin:0 0 1.8rem; }
+  .closing h2 em{ font-style:normal; color:#150001; }
+  .closing p{ color:rgba(255,255,255,0.85); max-width:48ch; margin:0 auto 2.4rem; font-size:1.15rem; line-height:1.75; }
+  .signoff{ font-size:1.1rem; color:#fff; letter-spacing:0.02em; }
+  .signoff span{ color:#150001; font-weight:700; }
+
+  /* ============ CREDITS STINGER: "will return in 2027" ============ */
+  #credits{
+    position:relative; z-index:1; min-height:100vh; background:#000;
+    display:flex; align-items:center; justify-content:center; overflow:hidden;
+    scroll-snap-align:start;
+  }
+  #credits::before{
+    content:""; position:absolute; top:-6px; left:0; right:0; height:12px;
+    background:#000; z-index:5;
+  }
+  #credits .c-layer{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; opacity:0; }
+  #credits.active #cReturn{ animation:fadeSeq 3.6s 0.3s ease forwards; }
+  @keyframes fadeSeq{ 0%{opacity:0; transform:translateY(10px);} 22%{opacity:1; transform:translateY(0);} 78%{opacity:1;} 100%{opacity:0;} }
+  #cReturn .txt{ font-size:clamp(1.9rem,6.4vw,3.6rem); color:var(--paper); text-align:center; letter-spacing:0.03em; }
+  #cReturn .txt span{ color:var(--red); }
+
+  #cAdvice{ opacity:0; transition:opacity 0.6s ease; }
+  #cAdvice.show{ opacity:1; }
+  #cAdvice .txt{ font-size:clamp(1.5rem,4.6vw,2.6rem); color:var(--paper); text-align:center; letter-spacing:0.03em; max-width:22ch; padding:0 6vw; }
+
+  #cFinal{ opacity:0; transition:opacity 0.8s ease; }
+  #cFinal.show{ opacity:1; }
+  .final-wrap{ display:flex; flex-direction:column; align-items:center; gap:1.6rem; padding:0 6vw; }
+  .final-eyes{ width:min(46vw, 200px); height:auto; overflow:visible; }
+  .end-eye-group{ animation:blink 3s 0.6s ease-in-out infinite; transform-origin:center; }
+  .end-eye{ fill:#ffffff; filter:drop-shadow(0 0 12px rgba(255,255,255,0.55)); }
+  .quote-txt{
+    font-family:'Cinzel', serif; font-weight:600; color:var(--paper);
+    font-size:clamp(1.05rem,2.6vw,1.5rem); line-height:1.7; text-align:center;
+    max-width:34ch; min-height:3.4em;
+  }
+  .enjoy-block{
+    display:flex; flex-direction:column; align-items:center; gap:0.9rem;
+    opacity:0; transform:translateY(14px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .enjoy-block.show{ opacity:1; transform:translateY(0); }
+  .enjoy-block .txt{ font-size:clamp(2rem,6vw,3.6rem); color:#E11D2E; }
+
+  footer{ text-align:center; padding:2.6rem 1rem 3.2rem; color:rgba(243,239,230,0.3); font-size:0.9rem; background:#000; position:relative; z-index:1; }
+
+  /* ============ MOBILE TUNING ============ */
+  @media (max-width:640px){
+    .power-grid{ grid-template-columns:1fr; }
+    section{ padding:5.5rem 6vw; }
+    .hero-grid{ gap:2rem; }
+    .hero{ min-height:100svh; }
+    .eyes-svg{ width:min(78vw, 340px); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== INTRO: eyes -> welcome -> Spidey flip logo ===================== -->
+<div id="intro">
+  <div class="layer" id="bgLayer"></div>
+
+  <div class="layer" id="contentLayer">
+    <svg class="eyes-svg" viewBox="0 0 287 220" xmlns="http://www.w3.org/2000/svg">
+      <g class="eye-group">
+        <path class="eye" d="
+          M 29 28
+          C 18 48, 17 68, 21 91
+          C 25 119, 35 151, 51 171
+          C 59 181, 68 188, 75 191
+          C 98 186, 119 166, 135 149
+          C 119 125, 93 104, 68 82
+          C 48 65, 34 49, 29 28
+          Z
+        "/>
+        <path class="eye" d="
+          M 258 28
+          C 269 48, 270 68, 266 91
+          C 262 119, 252 151, 236 171
+          C 228 181, 219 188, 212 191
+          C 189 186, 168 166, 152 149
+          C 168 125, 194 104, 219 82
+          C 239 65, 253 49, 258 28
+          Z
+        "/>
+      </g>
+    </svg>
+    <div id="welcomeText">
+      <span class="line1">Welcome</span>
+      <span class="line2">Spidey</span>
+    </div>
+  </div>
+
+  <div id="blackOut"></div>
+</div>
+
+<!-- ===================== MAIN SITE ===================== -->
+<div id="site">
+  <div class="bg-web" id="webBg"></div>
+
+  <section class="hero">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-eyebrow"><i class="fa-solid fa-spider icon-spider-red"></i> A message for the friendly neighborhood birthday boy</div>
+        <h1 class="hero-title display">Spideman<span class="accent">Far From Young</span></h1>
+      </div>
+      <div class="side-note">
+        Whatever you're swinging through today, I hope it's slow, easy, and exactly where you want to be. <b>This one's for you.</b>
+      </div>
+    </div>
+  </section>
+
+  <div class="web-divider">
+    <div class="line"></div>
+  </div>
+
+  <section class="message reveal-up">
+    <div class="eyebrow-label"><i class="fa-solid fa-spider icon-spider-thin"></i> Wishing you</div>
+    <h2 class="display">A happy birthday</h2>
+    <p>No costume, no big speech, no web shooters needed for this one. Just wanted to say <strong>happy birthday</strong>, and mean it plainly.</p>
+    <p>You've got a way of making the people around you feel steadier. Not by doing anything dramatic, just by being <strong>who you are</strong>, consistently, in a way that's easy to lean on.</p>
+    <p>You're <strong>my biggest hypeman</strong>, always in my corner before I even have to ask. And on top of everything else, you're a genuinely <strong>great dad</strong>, the kind of steady presence that makes it look easy when it isn't.</p>
+  </section>
+
+  <section class="powers reveal-up">
+    <div class="eyebrow-label">What you've taught me</div>
+    <h2 class="display">A couple of your powers, for the record</h2>
+    <p>Nothing radioactive involved. Just things you've taught by example.</p>
+    <div class="power-grid">
+      <div class="power-card"><span class="mark">01</span><h3>Staying positive</h3><p>You find the good angle without forcing it. It's not naivety, it's a choice you keep making, and it rubs off on everyone near you.</p></div>
+      <div class="power-card"><span class="mark">02</span><h3>Slowing down</h3><p>You showed me there's real strength in pausing, in actually being where your feet are instead of rushing to the next thing.</p></div>
+      <div class="power-card"><span class="mark">03</span><h3>Focusing on the now</h3><p>Not stuck in what happened, not anxious about what's next. Just here. That's a harder trick than it looks.</p></div>
+      <div class="power-card"><span class="mark">04</span><h3>Just being you</h3><p>No cape required. You're a genuinely positive guy, and that's rarer, and more valuable, than any superpower.</p></div>
+    </div>
+  </section>
+
+  <section class="closing reveal-up">
+    <div class="closing-inner">
+      <h2 class="display">All the best in this<br><em>new chapter</em></h2>
+      <p>Here's to another year of you being exactly who you are, steady, warm, and completely yourself. Whatever this new chapter holds, I'm glad I get to watch you swing into it.</p>
+      <p class="signoff">Happy birthday, <span>Spidey</span>.🕸️</p>
+    </div>
+  </section>
+
+  <!-- ===================== END CREDITS STINGER ===================== -->
+  <div id="credits">
+    <div class="c-layer" id="cReturn">
+      <div class="txt neue">Spidey's Birthday<br>will return in <span>2027</span></div>
+    </div>
+    <div class="c-layer" id="cAdvice">
+      <div class="txt neue" id="adviceText"></div>
+    </div>
+    <div class="c-layer" id="cFinal">
+      <div class="final-wrap">
+        <svg class="final-eyes" viewBox="0 0 287 220" xmlns="http://www.w3.org/2000/svg">
+          <g class="end-eye-group">
+            <path class="end-eye" d="
+              M 29 28
+              C 18 48, 17 68, 21 91
+              C 25 119, 35 151, 51 171
+              C 59 181, 68 188, 75 191
+              C 98 186, 119 166, 135 149
+              C 119 125, 93 104, 68 82
+              C 48 65, 34 49, 29 28
+              Z
+            "/>
+            <path class="end-eye" d="
+              M 258 28
+              C 269 48, 270 68, 266 91
+              C 262 119, 252 151, 236 171
+              C 228 181, 219 188, 212 191
+              C 189 186, 168 166, 152 149
+              C 168 125, 194 104, 219 82
+              C 239 65, 253 49, 258 28
+              Z
+            "/>
+          </g>
+        </svg>
+        <p class="quote-txt" id="quoteText"></p>
+        <div class="enjoy-block" id="enjoyBlock">
+          <iconify-icon icon="mdi:spider" style="font-size: 120px; color: red; opacity: 0%;"></iconify-icon>
+          <div class="txt display">Enjoy your day</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const ns = "http://www.w3.org/2000/svg";
+  function buildWeb(svgEl, o){
+    for(let i=0;i<o.spokes;i++){
+      const a = (Math.PI/(o.spokes-1))*i;
+      const line = document.createElementNS(ns,"line");
+      line.setAttribute("x1",o.cx); line.setAttribute("y1",o.cy);
+      line.setAttribute("x2", o.cx+o.maxR*Math.cos(a)); line.setAttribute("y2", o.cy+o.maxR*Math.sin(a));
+      line.setAttribute("class", o.cls); svgEl.appendChild(line);
+    }
+    for(let r=1;r<=o.rings;r++){
+      const radius=(o.maxR/o.rings)*r*0.55; let pts=[];
+      for(let i=0;i<=o.spokes-1;i++){ const a=(Math.PI/(o.spokes-1))*i; pts.push((o.cx+radius*Math.cos(a))+","+(o.cy+radius*Math.sin(a))); }
+      const poly=document.createElementNS(ns,"polyline"); poly.setAttribute("points",pts.join(" ")); poly.setAttribute("class",o.cls);
+      svgEl.appendChild(poly);
+    }
+  }
+  const bgSvg = document.createElementNS(ns,"svg"); bgSvg.setAttribute("viewBox","0 0 1000 1000"); bgSvg.setAttribute("preserveAspectRatio","xMidYMid slice");
+  document.getElementById('webBg').appendChild(bgSvg);
+  buildWeb(bgSvg, {cx:500,cy:0,spokes:14,rings:7,maxR:1400,cls:'bg-line'});
+
+  const intro=document.getElementById('intro'), site=document.getElementById('site');
+  let finished=false;
+  function finishIntro(){
+    if(finished) return; finished=true;
+    intro.classList.add('hide');
+    site.classList.add('reveal'); document.body.style.overflow='auto';
+    initScrollReveal(); initCredits();
+  }
+  document.body.style.overflow='hidden';
+  setTimeout(finishIntro, 6900);
+
+  function initScrollReveal(){
+    const items=document.querySelectorAll('.reveal-up');
+    const obs=new IntersectionObserver((entries)=>{
+      entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('in'); obs.unobserve(en.target); } });
+    },{threshold:0.2});
+    items.forEach(i=>obs.observe(i));
+  }
+
+  function typeText(el, text, speed, callback){
+    let i=0;
+    el.textContent='';
+    const interval=setInterval(()=>{
+      el.textContent += text[i];
+      i++;
+      if(i>=text.length){ clearInterval(interval); if(callback) callback(); }
+    }, speed);
+  }
+
+  function runCreditsSequence(){
+    const cAdvice=document.getElementById('cAdvice');
+    const cFinal=document.getElementById('cFinal');
+    const adviceText=document.getElementById('adviceText');
+    const quoteText=document.getElementById('quoteText');
+    const enjoyBlock=document.getElementById('enjoyBlock');
+
+    // cReturn fades in at 0.3s and out by ~3.9s (see fadeSeq animation timing)
+    setTimeout(()=>{
+      cAdvice.classList.add('show');
+      typeText(adviceText, "I will leave you with one piece of advice", 45, ()=>{
+        setTimeout(()=>{
+          cAdvice.classList.remove('show');
+          setTimeout(()=>{
+            cFinal.classList.add('show');
+            typeText(quoteText, "Life isn't about knowing where you'll land. It's about having the courage to swing.", 35, ()=>{
+              setTimeout(()=>{
+                enjoyBlock.classList.add('show');
+              }, 900);
+            });
+          }, 700);
+        }, 1300);
+      });
+    }, 4200);
+  }
+
+  function initCredits(){
+    const credits=document.getElementById('credits');
+    const obs=new IntersectionObserver((entries)=>{
+      entries.forEach(en=>{ if(en.isIntersecting){ credits.classList.add('active'); runCreditsSequence(); obs.unobserve(en.target); } });
+    },{threshold:0.4});
+    obs.observe(credits);
+  }
+</script>
+
+</body>
+</html>
